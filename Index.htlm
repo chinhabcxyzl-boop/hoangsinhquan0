@@ -1,0 +1,123 @@
+from flask import Flask, render_template_string, request
+import random
+
+app = Flask(__name__)
+
+money = 10000
+
+html = """
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>TAI XIU DEMO</title>
+
+<style>
+
+body{
+    background:#0f0f0f;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+    padding-top:50px;
+}
+
+.box{
+    width:350px;
+    margin:auto;
+    background:#1a1a1a;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 0 25px cyan;
+}
+
+button{
+    width:120px;
+    height:50px;
+    border:none;
+    border-radius:10px;
+    margin:10px;
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.tai{
+    background:#00c3ff;
+}
+
+.xiu{
+    background:#ff0080;
+}
+
+h1{
+    color:cyan;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="box">
+
+<h1>TÀI XỈU DEMO</h1>
+
+<h2>Coin: {{money}}</h2>
+
+<h2>{{msg}}</h2>
+
+<form method="POST">
+
+<button class="tai" name="chon" value="tai">
+TÀI
+</button>
+
+<button class="xiu" name="chon" value="xiu">
+XỈU
+</button>
+
+</form>
+
+</div>
+
+</body>
+</html>
+
+"""
+
+@app.route("/", methods=["GET","POST"])
+def home():
+
+    global money
+
+    msg = "Chọn cược"
+
+    if request.method == "POST":
+
+        player = request.form["chon"]
+
+        dice = random.randint(3,18)
+
+        if dice >= 11:
+            result = "tai"
+        else:
+            result = "xiu"
+
+        if player == result:
+            money += 1000
+            msg = f"THẮNG +1000 | KQ: {dice}"
+        else:
+            money -= 1000
+            msg = f"THUA -1000 | KQ: {dice}"
+
+    return render_template_string(
+        html,
+        money=money,
+        msg=msg
+    )
+
+app.run(
+    host="0.0.0.0",
+    port=5000
+)
